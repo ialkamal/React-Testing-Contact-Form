@@ -1,6 +1,16 @@
 import React from "react";
-import { render, screen, fireEvent, act } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  act,
+  waitForElement,
+  getByTestId,
+} from "@testing-library/react";
 import App from "./App";
+import getResponse from "./services/getResponse";
+
+jest.mock("./services/getResponse");
 
 test("renders App without crashing", () => {
   render(<App />);
@@ -109,4 +119,39 @@ test("Check Email format errors", async () => {
   expect(email).toBeInTheDocument();
   expect(email).toHaveValue("Ismail");
   expect(screen.queryByTestId("emailError")).toBeInTheDocument();
+});
+
+test("Check Response from REQ/RES errors", async () => {
+  render(<App />);
+
+  const submit = screen.getByTestId("submit");
+
+  await act(async () => {
+    fireEvent.change(screen.getByTestId("firstName"), {
+      target: { value: "Ismail" },
+    });
+    fireEvent.change(screen.getByTestId("lastName"), {
+      target: { value: "Al Kamal" },
+    });
+    fireEvent.change(screen.getByTestId("email"), {
+      target: { value: "ismail.alkamal@gmail.com" },
+    });
+    fireEvent.change(screen.getByTestId("message"), {
+      target: { value: "Welcome to Lambda school" },
+    });
+    fireEvent.click(submit);
+  });
+
+  // const sampleResponse = {
+  //   firstName: "Ismail",
+  //   lastName: "Al Kamal",
+  //   email: "ismail.alkamal@gmail.com",
+  //   message: "Welcome to Lambda school",
+  //   id: "522",
+  //   createdAt: "2020-11-03T12:39:29.511Z",
+  // };
+
+  // getResponse.mockResolvedValueOnce(sampleResponse);
+
+  expect(getResponse).toHaveBeenCalledTimes(1);
 });

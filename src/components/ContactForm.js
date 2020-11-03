@@ -1,13 +1,17 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import getResponse from "../services/getResponse";
 
 const ContactForm = () => {
   const [data, setData] = useState();
-  const { register, errors, handleSubmit } = useForm({
+
+  const { register, errors, handleSubmit, reset } = useForm({
     mode: "onBlur",
   });
+
   const onSubmit = (data) => {
-    setData(data);
+    getResponse(data, setData);
+    reset();
   };
 
   return (
@@ -74,12 +78,17 @@ const ContactForm = () => {
             ref={register({ required: false })}
           />
         </div>
+
         {data && (
-          <pre style={{ textAlign: "left", color: "white" }}>
+          <pre
+            data-testid="result"
+            style={{ textAlign: "left", color: "white" }}
+          >
             {JSON.stringify(data, null, 2)}
           </pre>
         )}
-        <input type="submit" />
+
+        <input data-testid="submit" type="submit" />
       </form>
     </div>
   );
